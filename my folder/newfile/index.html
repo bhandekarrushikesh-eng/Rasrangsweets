@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rasrang Sweets - Premium Mithai House, Pune</title>
+<style>
+body { font-family: 'Arial', sans-serif; margin:0; padding:0; background:#fff8f0; color:#333; }
+header { background:#ffcc00; padding:20px; text-align:center; position:sticky; top:0; z-index:1000; }
+header h1 { margin:0; font-size:28px; color:#800000; }
+nav { display:flex; justify-content:center; gap:10px; margin-top:10px; flex-wrap:wrap; }
+nav button { padding:10px 15px; background:#800000; color:#fff; border:none; border-radius:5px; cursor:pointer; }
+nav button.active { background:#ff6600; }
+.category { padding:20px; }
+.category h2 { color:#800000; margin-bottom:15px; }
+.item { display:flex; gap:15px; margin-bottom:15px; border:1px solid #ffd699; padding:10px; border-radius:10px; background:#fff; align-items:center; }
+.item img { width:80px; height:80px; object-fit:cover; border-radius:10px; }
+.item-details { flex:1; }
+.item-details h3 { margin:0; color:#800000; font-size:16px; }
+.item-details p { margin:5px 0; font-size:13px; }
+.item-details span { font-weight:bold; }
+.item-actions { display:flex; flex-direction:column; align-items:flex-end; gap:5px; }
+.item-actions input { width:50px; text-align:center; }
+.item-actions button { padding:5px 10px; background:#800000; color:#fff; border:none; border-radius:5px; cursor:pointer; }
+#cart { position:fixed; bottom:20px; right:20px; background:#ff6600; color:#fff; padding:15px; border-radius:50px; cursor:pointer; font-weight:bold; z-index:1000; }
+#cartModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; }
+#cartContent { background:#fff; padding:20px; width:90%; max-width:400px; border-radius:10px; max-height:80%; overflow-y:auto; }
+#cartContent h2 { margin-top:0; color:#800000; }
+#cartContent ul { list-style:none; padding:0; }
+#cartContent li { display:flex; justify-content:space-between; margin-bottom:10px; }
+#cartContent button { padding:5px 10px; background:#800000; color:#fff; border:none; border-radius:5px; cursor:pointer; }
+footer { text-align:center; padding:20px; background:#ffcc00; margin-top:20px; font-size:14px; }
+footer a { color:#800000; margin:0 5px; text-decoration:none; }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Rasrang Sweets - Premium Mithai House, Pune</h1>
+    <nav>
+        <button class="active" onclick="showCategory('Sweets')">Sweets</button>
+        <button onclick="showCategory('Dairy')">Dairy Specials</button>
+        <button onclick="showCategory('Snacks')">Snacks</button>
+        <button onclick="showCategory('Cookies')">Cookies</button>
+    </nav>
+</header>
+
+<div id="menu"></div>
+
+<div id="cart">Cart (0)</div>
+
+<div id="cartModal">
+    <div id="cartContent">
+        <h2>Your Order</h2>
+        <ul id="cartItems"></ul>
+        <p>Total: ₹<span id="totalPrice">0</span></p>
+        <input type="text" id="customerName" placeholder="Your Name" style="width:100%; margin-bottom:10px; padding:5px;">
+        <input type="text" id="customerPhone" placeholder="Mobile Number" style="width:100%; margin-bottom:10px; padding:5px;">
+        <input type="text" id="customerAddress" placeholder="Delivery Address" style="width:100%; margin-bottom:10px; padding:5px;">
+        <button onclick="placeOrder()">Place Order on WhatsApp</button>
+        <button onclick="closeCart()">Close</button>
+    </div>
+</div>
+
+<footer>
+    📍 Shop No 1, Sahil Residency, Ashiyana Palace, Pune, Maharashtra 411018 | 📞 <a href="tel:8956433301">8956433301</a> | WhatsApp: <a href="https://wa.me/918956433301">8956433301</a><br>
+    <a href="https://maps.app.goo.gl/aFo7hxTddVzQZTGB6?g_st=aw" target="_blank">Google Maps</a> | 
+    <a href="https://www.instagram.com/rasrang_sweets_pune_official/" target="_blank">Instagram</a> | 
+    <a href="https://www.facebook.com/share/1EBVV863Q6/" target="_blank">Facebook</a><br>
+    Open: 8:30 AM - 9:30 PM, Every Day
+</footer>
+
+<script>
+// Full Menu Data (Complete)
+const menuData = {
+"Sweets":[
+{name:"Kaju Katli",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:455,img:"https://via.placeholder.com/80?text=Kaju+Katli"},
+{name:"Kesar Katli",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:495,img:"https://via.placeholder.com/80?text=Kesar+Katli"},
+{name:"Anjeer Katli",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:470,img:"https://via.placeholder.com/80?text=Anjeer+Katli"},
+{name:"Mixed Katli",desc:"Pure veg preparation.",price:495,img:"https://via.placeholder.com/80?text=Mixed+Katli"},
+{name:"Kaju Kesar Roll",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:495,img:"https://via.placeholder.com/80?text=Kaju+Kesar+Roll"},
+{name:"Pista Roll",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:675,img:"https://via.placeholder.com/80?text=Pista+Roll"},
+{name:"Anjeer Roll",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:0,img:"https://via.placeholder.com/80?text=Anjeer+Roll"},
+{name:"Pista Paan",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:675,img:"https://via.placeholder.com/80?text=Pista+Paan"},
+{name:"Pista Diamond",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:625,img:"https://via.placeholder.com/80?text=Pista+Diamond"},
+{name:"Anarkali",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:625,img:"https://via.placeholder.com/80?text=Anarkali"},
+{name:"Kaju Strawberry",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:495,img:"https://via.placeholder.com/80?text=Kaju+Strawberry"},
+{name:"Kaju Apple",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:495,img:"https://via.placeholder.com/80?text=Kaju+Apple"},
+{name:"Rose Laddu",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:495,img:"https://via.placeholder.com/80?text=Rose+Laddu"},
+{name:"Badam Ball",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:495,img:"https://via.placeholder.com/80?text=Badam+Ball"},
+{name:"Pista Ball",desc:"Traditional Indian sweet snack made with authentic ingredients and timeless flavours.",price:625,img:"https://via.placeholder.com/80?text=Pista+Ball"},
+{name:"Khajoor Laddu",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:470,img:"https://via.placeholder.com/80?text=Khajoor+Laddu"},
+{name:"Kaju Cake",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:520,img:"https://via.placeholder.com/80?text=Kaju+Cake"},
+{name:"Chocolate Cake",desc:"Veg preparation.",price:520,img:"https://via.placeholder.com/80?text=Chocolate+Cake"},
+{name:"Anjeer Dry Fruit",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:490,img:"https://via.placeholder.com/80?text=Anjeer+Dry+Fruit"},
+{name:"Kaju Dry Fruits",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:570,img:"https://via.placeholder.com/80?text=Kaju+Dry+Fruits"},
+{name:"Kalakand Milk Cake",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:245,img:"https://via.placeholder.com/80?text=Kalakand+Milk+Cake"},
+{name:"Malai Barfi",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:240,img:"https://via.placeholder.com/80?text=Malai+Barfi"},
+{name:"Mango Malai",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:260,img:"https://via.placeholder.com/80?text=Mango+Malai"},
+{name:"Butterscotch Malai",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:245,img:"https://via.placeholder.com/80?text=Butterscotch+Malai"},
+{name:"Butterscotch Burfi (1kg)",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:980,img:"https://via.placeholder.com/80?text=Butterscotch+Burfi"},
+{name:"Venilla Burfi",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:245,img:"https://via.placeholder.com/80?text=Venilla+Burfi"},
+{name:"Double Decker Burfi",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:245,img:"https://via.placeholder.com/80?text=Double+Decker+Burfi"},
+{name:"Mango Burfi",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:245,img:"https://via.placeholder.com/80?text=Mango+Burfi"},
+{name:"Malai Pista Burfi",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:245,img:"https://via.placeholder.com/80?text=Malai+Pista+Burfi"},
+{name:"Mix Burfi",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:245,img:"https://via.placeholder.com/80?text=Mix+Burfi"},
+{name:"Gulkand Cassata",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:260,img:"https://via.placeholder.com/80?text=Gulkand+Cassata"},
+{name:"Mango Cassata",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:260,img:"https://via.placeholder.com/80?text=Mango+Cassata"},
+{name:"Milk Mysore",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:270,img:"https://via.placeholder.com/80?text=Milk+Mysore"},
+{name:"Sangam Roll",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:245,img:"https://via.placeholder.com/80?text=Sangam+Roll"},
+{name:"Desi Ghee Motichoor Laddu",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:245,img:"https://via.placeholder.com/80?text=Desi+Ghee+Motichoor+Laddu"},
+{name:"Motichoor Laddu (Regular)",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:130,img:"https://via.placeholder.com/80?text=Motichoor+Laddu"},
+{name:"Balushahi",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:245,img:"https://via.placeholder.com/80?text=Balushahi"},
+{name:"Besan Laddu",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:235,img:"https://via.placeholder.com/80?text=Besan+Laddu"},
+{name:"Mysore Pak",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:130,img:"https://via.placeholder.com/80?text=Mysore+Pak"},
+{name:"Ghee Mysore Pak",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:220,img:"https://via.placeholder.com/80?text=Ghee+Mysore+Pak"},
+{name:"Mawa Gujiya",desc:"Traditional Indian deep fried dumplings filled with sweet khoya and dry fruits.",price:275,img:"https://via.placeholder.com/80?text=Mawa+Gujiya"},
+{name:"Kala Jamun",desc:"Deep fried khoya balls soaked in sugar syrup, soft and juicy.",price:215,img:"https://via.placeholder.com/80?text=Kala+Jamun"},
+{name:"Dry Shakkar Jamun",desc:"Deep fried khoya balls soaked in sugar syrup, soft and juicy.",price:215,img:"https://via.placeholder.com/80?text=Dry+Shakkar+Jamun"},
+{name:"Poushtik Laddu",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:260,img:"https://via.placeholder.com/80?text=Poushtik+Laddu"},
+{name:"Gulab Jamun (Mini)",desc:"Deep fried khoya balls soaked in sugar syrup, soft and juicy.",price:215,img:"https://via.placeholder.com/80?text=Gulab+Jamun+Mini"},
+{name:"Desi Ghee Jalebi",desc:"Crispy golden spirals soaked in saffron sugar syrup.",price:220,img:"https://via.placeholder.com/80?text=Desi+Ghee+Jalebi"},
+{name:"Jalebi (Regular)",desc:"Crispy golden spirals soaked in saffron sugar syrup.",price:120,img:"https://via.placeholder.com/80?text=Jalebi+Regular"},
+{name:"Pista Bite",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:675,img:"https://via.placeholder.com/80?text=Pista+Bite"},
+{name:"Orange Bite",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:545,img:"https://via.placeholder.com/80?text=Orange+Bite"},
+{name:"Strawberry Bite",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:545,img:"https://via.placeholder.com/80?text=Strawberry+Bite"},
+{name:"Rose Bite",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:545,img:"https://via.placeholder.com/80?text=Rose+Bite"},
+{name:"Mewa Bite",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:545,img:"https://via.placeholder.com/80?text=Mewa+Bite"},
+{name:"Mango Bite",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:545,img:"https://via.placeholder.com/80?text=Mango+Bite"},
+{name:"Chocolate Bite",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:545,img:"https://via.placeholder.com/80?text=Chocolate+Bite"},
+{name:"Mixed Bite",desc:"Veg preparation.",price:545,img:"https://via.placeholder.com/80?text=Mixed+Bite"},
+{name:"Rasmalai",desc:"Soft spongy cottage cheese discs soaked in saffron and cardamom flavoured sweet milk.",price:210,img:"https://via.placeholder.com/80?text=Rasmalai"},
+{name:"Angoor Malai",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:210,img:"https://via.placeholder.com/80?text=Angoor+Malai"},
+{name:"Rasgulla (1 piece)",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:30,img:"https://via.placeholder.com/80?text=Rasgulla+1pc"},
+{name:"Rajbhog",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:35,img:"https://via.placeholder.com/80?text=Rajbhog"},
+{name:"Cham Cham",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:235,img:"https://via.placeholder.com/80?text=Cham+Cham"},
+{name:"Malai Sandwich",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:235,img:"https://via.placeholder.com/80?text=Malai+Sandwich"},
+{name:"Kheer Kadam",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:235,img:"https://via.placeholder.com/80?text=Kheer+Kadam"},
+{name:"Malai Pakiza",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:235,img:"https://via.placeholder.com/80?text=Malai+Pakiza"},
+{name:"Malai Chhena Roll",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:235,img:"https://via.placeholder.com/80?text=Malai+Chhena+Roll"},
+{name:"Malai Chhena Toast",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:235,img:"https://via.placeholder.com/80?text=Malai+Chhena+Toast"},
+{name:"Dry Fruits Laddu",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:275,img:"https://via.placeholder.com/80?text=Dry+Fruits+Laddu"},
+{name:"Milk Cake",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:275,img:"https://via.placeholder.com/80?text=Milk+Cake"},
+{name:"Sugar Free Kaju Katli",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:550,img:"https://via.placeholder.com/80?text=Sugar+Free+Kaju+Katli"},
+{name:"Rasgulla (Can)",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:130,img:"https://via.placeholder.com/80?text=Rasgulla+Can"},
+{name:"Desi Ghee Soan Papdi",desc:"Traditional Indian sweet/snack made with authentic ingredients and timeless flavours.",price:190,img:"https://via.placeholder.com/80?text=Soan+Papdi"}
+],
+"Dairy":[
+{name:"Buttermilk (Chass)",desc:"Refreshing dairy drink.",price:30,img:"https://via.placeholder.com/80?text=Buttermilk"},
+{name:"Amrakhand",desc:"Sweetened yogurt dessert with mango.",price:115,img:"https://via.placeholder.com/80?text=Amrakhand"},
+{name:"Shrikhand",desc:"Traditional Indian sweet yogurt dessert.",price:115,img:"https://via.placeholder.com/80?text=Shrikhand"}
+],
+"Snacks":[
+{name:"Samosa (2 pcs)",desc:"Crispy pastry with spicy potato filling.",price:62,img:"https://via.placeholder.com/80?text=Samosa+2pcs"},
+{name:"Samosa+Kachori (1+1)",desc:"Crispy pastry with spicy potato filling.",price:62,img:"https://via.placeholder.com/80?text=Samosa+Kachori"},
+{name:"Kachori (2 pcs)",desc:"Flaky deep fried pastry with spicy lentil mix.",price:62,img:"https://via.placeholder.com/80?text=Kachori+2pcs"},
+{name:"Dhokla",desc:"Soft spongy steamed gram flour cake.",price:120,img:"https://via.placeholder.com/80?text=Dhokla"},
+{name:"Brown Khari (200g)",desc:"Flaky pastry.",price:100,img:"https://via.placeholder.com/80?text=Brown+Khari"},
+{name:"Jeera Khari (200g)",desc:"Flaky pastry.",price:100,img:"https://via.placeholder.com/80?text=Jeera+Khari"},
+{name:"Maska Khari (200g)",desc:"Flaky pastry.",price:100,img:"https://via.placeholder.com/80?text=Maska+Khari"},
+{name:"Special Khari (200g)",desc:"Flaky pastry.",price:100,img:"https://via.placeholder.com/80?text=Special+Khari"},
+{name:"Elaichi Toast (250g)",desc:"Cardamom-flavored toast.",price:95,img:"https://via.placeholder.com/80?text=Elaichi+Toast"},
+{name:"Garlic Toast (150g)",desc:"Garlic-flavored toast.",price:105,img:"https://via.placeholder.com/80?text=Garlic+Toast"},
+{name:"Jeera Toast (250g)",desc:"Cumin-flavored toast.",price:95,img:"https://via.placeholder.com/80?text=Jeera+Toast"},
+{name:"Toast (250g)",desc:"Regular toast.",price:105,img:"https://via.placeholder.com/80?text=Toast"}
+],
+"Cookies":[
+{name:"Almond Nankatai (200g)",desc:"Crispy almond cookies.",price:180,img:"https://via.placeholder.com/80?text=Almond+Nankatai"},
+{name:"Almond Stick Cookies (200g)",desc:"Crunchy almond sticks.",price:180,img:"https://via.placeholder.com/80?text=Almond+Stick"},
+{name:"Butterscotch Cookies (200g)",desc:"Sweet butterscotch flavor.",price:165,img:"https://via.placeholder.com/80?text=Butterscotch+Cookies"},
+{name:"Choco Stick Cookies (200g)",desc:"Chocolate sticks.",price:170,img:"https://via.placeholder.com/80?text=Choco+Stick"},
+{name:"Fruit Cookies (200g)",desc:"Mixed fruit cookies.",price:160,img:"https://via.placeholder.com/80?text=Fruit+Cookies"},
+{name:"Jeera Salty Cookies (200g)",desc:"Cumin-flavored salty cookies.",price:160,img:"https://via.placeholder.com/80?text=Jeera+Cookies"},
+{name:"Kaju Honey Cookies (250g)",desc:"Cashew honey cookies.",price:245,img:"https://via.placeholder.com/80?text=Kaju+Honey"},
+{name:"Kashmiri Jam Cookies (250g)",desc:"Jam-filled cookies.",price:220,img:"https://via.placeholder.com/80?text=Kashmiri+Jam"},
+{name:"Kesar Pista Stick Cookies (200g)",desc:"Saffron pistachio sticks.",price:170,img:"https://via.placeholder.com/80?text=Kesar+Pista"},
+{name:"Oats Cookies (200g)",desc:"Healthy oats cookies.",price:150,img:"https://via.placeholder.com/80?text=Oats+Cookies"},
+{name:"Orange Cream Cookies (200g)",desc:"Orange-flavored cream cookies.",price:130,img:"https://via.placeholder.com/80?text=Orange+Cream"},
+{name:"Rusk Cake Cookies (200g)",desc:"Rusk cookies.",price:150,img:"https://via.placeholder.com/80?text=Rusk+Cake"},
+{name:"Strawberry Cookies (200g)",desc:"Strawberry-flavored cookies.",price:175,img:"https://via.placeholder.com/80?text=Strawberry+Cookies"},
+{name:"Sugar Free Cookies (200g)",desc:"Sugar-free cookies.",price:190,img:"https://via.placeholder.com/80?text=Sugar+Free"},
+{name:"Wheat Coconut Cookies (200g)",desc:"Coconut wheat cookies.",price:155,img:"https://via.placeholder.com/80?text=Wheat+Coconut"},
+{name:"Wheat Pista Cookies (200g)",desc:"Pistachio wheat cookies.",price:165,img:"https://via.placeholder.com/80?text=Wheat+Pista"}
+]
+};
+
+let cart=[];
+let orderCounter=1;
+
+function showCategory(category){
+document.querySelectorAll('nav button').forEach(btn=>btn.classList.remove('active'));
+event.target.classList.add('active');
+const container=document.getElementById('menu');
+container.innerHTML='';
+menuData[category].forEach((item,i)=>{
+const div=document.createElement('div');
+div.className='item';
+div.innerHTML=`
+<img src="${item.img}" alt="${item.name}">
+<div class="item-details">
+<h3>${item.name}</h3>
+<p>${item.desc}</p>
+<span>₹${item.price}</span>
+</div>
+<div class="item-actions">
+<input type="number" min="1" value="1" id="qty-${category}-${i}">
+<button onclick="addToCart('${category}',${i})">Add</button>
+</div>
+`;
+container.appendChild(div);
+});
+}
+
+function addToCart(category,index){
+const qty=parseInt(document.getElementById(`qty-${category}-${index}`).value);
+const item=menuData[category][index];
+const existing=cart.find(c=>c.name===item.name);
+if(existing){ existing.qty+=qty; } else { cart.push({name:item.name,price:item.price,qty:qty}); }
+updateCart();
+alert(`${item.name} added to cart`);
+}
+
+function updateCart(){
+document.getElementById('cart').innerText=`Cart (${cart.reduce((a,b)=>a+b.qty,0)})`;
+}
+
+document.getElementById('cart').addEventListener('click',()=>{ openCart(); });
+
+function openCart(){
+const cartItems=document.getElementById('cartItems');
+cartItems.innerHTML='';
+let total=0;
+cart.forEach(item=>{
+const li=document.createElement('li');
+li.innerHTML=`${item.name} x ${item.qty} = ₹${item.qty*item.price} <button onclick="removeItem('${item.name}')">Remove</button>`;
+cartItems.appendChild(li);
+total+=item.qty*item.price;
+});
+document.getElementById('totalPrice').innerText=total;
+document.getElementById('cartModal').style.display='flex';
+}
+
+function closeCart(){ document.getElementById('cartModal').style.display='none'; }
+
+function removeItem(name){ cart=cart.filter(c=>c.name!==name); openCart(); updateCart(); }
+
+function placeOrder(){
+const name=document.getElementById('customerName').value;
+const phone=document.getElementById('customerPhone').value;
+const address=document.getElementById('customerAddress').value;
+if(!name||!phone||!address){ alert('Please fill all details'); return; }
+let total=0;
+let orderText=`Rasrang Sweets Order\nOrder ID: #${orderCounter}\n\nItems:\n`;
+cart.forEach(i=>{ orderText+=`${i.name} x ${i.qty} = ₹${i.qty*i.price}\n`; total+=i.qty*i.price; });
+orderText+=`\nTotal: ₹${total}\n\nCustomer: ${name}\nPhone: ${phone}\nAddress: ${address}`;
+window.open(`https://wa.me/918956433301?text=${encodeURIComponent(orderText)}`);
+orderCounter++;
+cart=[]; updateCart(); closeCart();
+}
+
+showCategory('Sweets');
+</script>
+
+</body>
+</html>
